@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
 import styled, {css} from 'styled-components';
-import NavBar from './NavBar';
 import cc from 'cryptocompare';
+import NavBar from './NavBar';
+import CoinList from './CoinList';
+
 
 const AppLayout=styled.div`
 padding: 20px;
@@ -79,6 +81,7 @@ loadingContent = ()=>{
         {this.loadingContent()}
         <Content>
         {this.displaySettings() && this.settingsContent()}
+        {this.displayDashBoard() && CoinList.call(this)}
         </Content>
       </AppLayout>
     );
