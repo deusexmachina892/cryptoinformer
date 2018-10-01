@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import styled, {css} from 'styled-components';
+import _ from 'lodash';
 import cc from 'cryptocompare';
 import NavBar from './NavBar';
 import CoinList from './CoinList';
@@ -12,8 +13,7 @@ padding: 20px;
 
 const Content = styled.div`
 
-`;
-
+`; 
 const checkFirstVisit = ()=>{
   const cryptoInformerData = localStorage.getItem('cryptoInformer');
   if(!cryptoInformerData){
@@ -24,12 +24,15 @@ const checkFirstVisit = ()=>{
   }
 }
 
+const MAX_FAVORITES = 10;
+
 class App extends Component {
 
   constructor(props){
     super(props);
     this.state = {
       page: '',
+      favorites:['ETH'],
       ...checkFirstVisit()
     }
   }
@@ -41,6 +44,23 @@ componentDidMount = () =>{
 fetchCoins = async ()=>{
   let coinList = (await cc.coinList()).Data;
   this.setState({coinList});
+}
+
+addCoinToFavorites = (coinKey) => {
+  let favorites = [...this.state.favorites];
+  if(favorites.length < MAX_FAVORITES){
+    favorites.push(coinKey);
+    this.setState({favorites});
+  }
+
+}
+removeCoinFromFavorites = (coinKey) => {
+  let favorites = [...this.state.favorites];  
+  this.setState({favorites: _.pull(favorites, coinKey)});
+}
+
+isInFavorites = (coinKey) => {
+  return _.includes(this.state.favorites, coinKey);
 }
 
 firstVisitMessage = ()=>{if(this.state.firstVisit){
@@ -68,21 +88,25 @@ settingsContent = ()=>{
          <div onClick={(event)=>this.confirmFavorites()}>
           Confirm Favorites
          </div>
+         {CoinList.call(this, true)}
+        {CoinList.call(this)}
+          
   </div>
 }
 
 loadingContent = ()=>{
-  return <div>Loading Coin List..</div>
+  if(!this.state.coinList){
+    return <div>Loading Coin List..</div>
+  }
+  
 }
   render() {
     return (
       <AppLayout>
         {NavBar.call(this)}
-        {this.loadingContent()}
-        <Content>
+        {this.loadingContent()|| <Content>
         {this.displaySettings() && this.settingsContent()}
-        {this.displayDashBoard() && CoinList.call(this)}
-        </Content>
+        </Content>} 
       </AppLayout>
     );
   }
