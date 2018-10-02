@@ -1,6 +1,6 @@
 import React from 'react';
 import styled, {css} from 'styled-components';
-import {subtleBoxShadow, lightBackground, greenBoxShadow, redBoxShadow} from './Style';
+import {subtleBoxShadow, lightBackground, goldBoxShadow, redBoxShadow} from './Style';
 
 const CoinGrid = styled.div`
     display:grid;
@@ -18,7 +18,7 @@ const CoinTile = styled.div`
         cursor:pointer;
         color: #BC8B5E;
         border: 1px solid #BC8B5E;
-        ${greenBoxShadow}
+        ${goldBoxShadow}
     }
     ${props => props.favorite && css`
         &:hover{

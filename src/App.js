@@ -5,6 +5,8 @@ import _ from 'lodash';
 import cc from 'cryptocompare';
 import NavBar from './NavBar';
 import CoinList from './CoinList';
+import Search from './Search';
+import {ConfirmButton} from './Buttons';
 
 
 const AppLayout=styled.div`
@@ -14,6 +16,14 @@ padding: 20px;
 const Content = styled.div`
 
 `; 
+const CenterDiv= styled.div`
+  display: grid;
+  justify-content: center;
+
+`;
+
+const MAX_FAVORITES = 15;
+
 const checkFirstVisit = ()=>{
   const cryptoInformerData = localStorage.getItem('cryptoInformer');
   if(!cryptoInformerData){
@@ -23,8 +33,6 @@ const checkFirstVisit = ()=>{
     }
   }
 }
-
-const MAX_FAVORITES = 15;
 
 class App extends Component {
 
@@ -87,10 +95,13 @@ displaySettings= ()=>{
 settingsContent = ()=>{
   return <div>
      {this.firstVisitMessage()}
-         <div onClick={(event)=>this.confirmFavorites()}>
-          Confirm Favorites
-         </div>
+         <CenterDiv>
+              <ConfirmButton onClick={(event)=>this.confirmFavorites()}>
+              Confirm Favorites
+            </ConfirmButton>
+         </CenterDiv>
          {CoinList.call(this, true)}
+         {Search.call(this)}
         {CoinList.call(this)}
           
   </div>
