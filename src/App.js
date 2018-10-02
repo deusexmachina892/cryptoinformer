@@ -32,7 +32,7 @@ class App extends Component {
     super(props);
     this.state = {
       page: '',
-      favorites:['ETH'],
+      favorites:[],
       ...checkFirstVisit()
     }
   }
@@ -68,11 +68,13 @@ firstVisitMessage = ()=>{if(this.state.firstVisit){
 }}
 
 confirmFavorites = ()=>{
-  localStorage.setItem('cryptoInformer', 'test');
   this.setState({
     firstVisit: false,
     page: "dashboard"
   });
+  localStorage.setItem('cryptoInformer',JSON.stringify({
+    favorites: this.state.favorites
+  }))
 }
 
 displayDashBoard= ()=>{
