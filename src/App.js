@@ -7,7 +7,7 @@ import NavBar from './NavBar';
 import CoinList from './CoinList';
 import Search from './Search';
 import {ConfirmButton} from './Buttons';
-
+import fuzzy from 'fuzzy';
 
 const AppLayout=styled.div`
 padding: 20px;
@@ -83,6 +83,34 @@ confirmFavorites = ()=>{
   localStorage.setItem('cryptoInformer',JSON.stringify({
     favorites: this.state.favorites
   }))
+}
+
+handleFilter = _.debounce((inputValue)=>{
+  let coinSymbols = Object.keys(this.state.coinList);
+
+  let coinNames = coinSymbols.map(sym => this.state.coinList[sym].CoinName);
+
+  let allStringsToSearch = coinSymbols.concat(coinNames);
+
+  let fuzzyResults = fuzzy.filter(inputValue, allStringsToSearch, {}).map(result => result.string);
+  
+  let filteredCoins = _.pickBy(this.state.coinList, (result, symKey)=>{
+      let coinName = result.CoinName;
+
+      return _.includes(fuzzyResults, symKey) || _.includes(fuzzyResults, coinName);
+  });
+    this.setState({filteredCoins});
+}, 500);
+
+filterCoin = (event)=>{
+  let inputValue = _.get(event, 'target.value');
+  if(!inputValue){
+    this.setState({
+      filteredCoins: null
+    });
+    return;
+  }
+  this.handleFilter(inputValue); 
 }
 
 displayDashBoard= ()=>{
