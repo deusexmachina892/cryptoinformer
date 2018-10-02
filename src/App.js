@@ -24,7 +24,7 @@ const checkFirstVisit = ()=>{
   }
 }
 
-const MAX_FAVORITES = 10;
+const MAX_FAVORITES = 15;
 
 class App extends Component {
 
