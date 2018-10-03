@@ -50,6 +50,7 @@ class App extends Component {
     this.state = {
       page: 'dashboard',
       favorites:['BTC'],
+      timeInterval: 'months',
       ...getInitialState()
     }
   }
@@ -65,7 +66,7 @@ fetchHistoricalData = async () =>{
     let results = await this.historicalData();
     let historical = [{
       name: this.state.currentFavorite,
-      data: results.map((ticker, index) => [moment().subtract({months: (TIME_UNITS - index)}).valueOf(), ticker.USD])
+      data: results.map((ticker, index) => [moment().subtract({[this.state.timeInterval]: (TIME_UNITS - index)}).valueOf(), ticker.USD])
     }];
     this.setState({historical});
   }
@@ -73,7 +74,7 @@ fetchHistoricalData = async () =>{
 historicalData = () =>{
   let promises = [];
   for (let units = TIME_UNITS; units > 0; units--){
-    promises.push(cc.priceHistorical(this.state.currentFavorite, ['USD'], moment().subtract({months: units}).toDate()));
+    promises.push(cc.priceHistorical(this.state.currentFavorite, ['USD'], moment().subtract({[this.state.timeInterval]: units}).toDate()));
   }
   return Promise.all(promises);
 }
@@ -87,18 +88,31 @@ fetchPrices = async () => {
   }
   this.setState({prices});
 }
-prices = () =>{
-  let promises = [];
-  this.state.favorites.forEach((sym)=>{
-    promises.push(cc.priceFull(sym, 'USD'));
-  });
-
-  return Promise.all(promises);
+prices = async () =>{
+  let returnData = [];
+  for(let i=0; i< this.state.favorites.length; i++){
+    try{
+    let priceData = await cc.priceFull(this.state.favorites[i], 'USD');
+    returnData.push(priceData);
+    }catch(err){
+        console.warn('price fetch error', err)
+    }
+  }
+  return returnData;
 }
 
 fetchCoins = async ()=>{
   let coinList = (await cc.coinList()).Data;
-  this.setState({coinList});
+  this.setState({coinList, favorites: this.validatedFavorites(coinList)});
+}
+validateFavorites = (coinList) =>{
+  let validatedFavorites = [];
+  this.state.favorites.forEach((favorite)=>{
+    if(coinList[favorite]){
+      validatedFavorites.push(favorite);
+    }
+  });
+  return validatedFavorites;
 }
 
 addCoinToFavorites = (coinKey) => {
@@ -129,7 +143,7 @@ confirmFavorites = ()=>{
     page: "dashboard",
     prices: null,
     currentFavorite,
-    historical: null
+    historical: null,
   });
   this.fetchPrices();
   this.fetchHistoricalData();
@@ -197,8 +211,8 @@ dashboardContent = ()=>{
   if(this.state.favorites.length === 0){
     return <div>No favorites chosen..</div>
   } else {
-    
-  DashBoard.call(this);
+    console.log('ok');
+  return DashBoard.call(this);
   }
 }
 

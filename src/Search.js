@@ -13,7 +13,7 @@ const SearchContainer = styled.div`
 const SearchInput = styled.input`
     ${lightBackground}
     place-self: center left;
-    color:#1163c9;
+    color:#BC8B5E;
     ${fontSize}
     margin: 5px;
     height: 25px;

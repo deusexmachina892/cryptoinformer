@@ -1,7 +1,7 @@
 import React from 'react';
 import {CoinGrid, CoinTile, CoinTileHeader} from './CoinList';
 import styled, {css} from 'styled-components';
-import {fontSizeBig, fontSize3, lightBackground, subtleBoxShadow} from './Style';
+import {fontSizeBig, fontSize, fontSize3, lightBackground, subtleBoxShadow, goldBoxShadow, yellowBackground} from './Style';
 import theme from './HighChartsTheme';  
 import HighChartsConfig from './HighCharts';
 import ReactHighCharts from 'react-highcharts';
@@ -45,6 +45,18 @@ const ChartGrid = styled.div`
 const numberFormat = (number)=>{
     return + (number+'').slice(0,7);
 }
+const ChartSelector = styled.select`
+    ${lightBackground}
+    color:#BC8B5E;
+    ${fontSize3}
+    margin: 5px;
+    height: 25px;
+   float: right;
+   &:hover{
+       ${goldBoxShadow}
+   }
+`;
+
 
 export default function(){
     let self = this;
@@ -85,6 +97,15 @@ export default function(){
         </div>
     </PaddingLight>
     <PaddingLight>
+        <ChartSelector onChange={(event)=>{ 
+            this.setState({timeInterval: event.target.value, historical: null}, this.fetchHistoricalData());
+            //this.fetchHistoricalData();
+            //Have to call this.fetchHistoricalData() in setState. Otherwise, it will fetch previous data
+    }}>
+            <option value="days">Days</option>
+            <option value="weeks">Weeks</option>
+            <option selected value="months">Months</option>
+        </ChartSelector>
         {this.state.historical ?
         <ReactHighCharts config={HighChartsConfig.call(this)}/>:<div>{this.loadingHistoricalData()}</div>
         }

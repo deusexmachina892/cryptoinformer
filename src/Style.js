@@ -4,7 +4,7 @@ export const color3 = '#d8cf6c';
 
 export const blackBackground = `background-color: ${color}`;
 export const lightBackground = `background-color: ${color2}`;
-export const yellowBacground = `background-color: ${color3}`;
+export const yellowBackground = `background-color: ${color3}`;
 
 export const fontColorWhite = 'color: #fff';
 export const fontColorGold = 'color: #BC8B5E';
