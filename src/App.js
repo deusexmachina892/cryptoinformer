@@ -9,6 +9,7 @@ import CoinList from './CoinList';
 import Search from './Search';
 import {ConfirmButton} from './Buttons';
 import fuzzy from 'fuzzy';
+import moment from 'moment';
 
 const AppLayout=styled.div`
 padding: 20px;
@@ -24,6 +25,8 @@ const CenterDiv= styled.div`
 `;
 
 const MAX_FAVORITES = 15;
+const TIME_UNITS = 10;
+
 
 const getInitialState = ()=>{
   const cryptoInformerData = JSON.parse(localStorage.getItem('cryptoInformer'));
@@ -46,7 +49,7 @@ class App extends Component {
     super(props);
     this.state = {
       page: 'dashboard',
-      favorites:[],
+      favorites:['BTC'],
       ...getInitialState()
     }
   }
@@ -54,6 +57,25 @@ class App extends Component {
 componentDidMount = () =>{
   this.fetchCoins();
   this.fetchPrices();
+  this.fetchHistoricalData()
+}
+
+fetchHistoricalData = async () =>{
+  if(this.state.currentFavorite){
+    let results = await this.historicalData();
+    let historical = [{
+      name: this.state.currentFavorite,
+      data: results.map((ticker, index) => [moment().subtract({months: (TIME_UNITS - index)}).valueOf(), ticker.USD])
+    }];
+    this.setState({historical});
+  }
+}
+historicalData = () =>{
+  let promises = [];
+  for (let units = TIME_UNITS; units > 0; units--){
+    promises.push(cc.priceHistorical(this.state.currentFavorite, ['USD'], moment().subtract({months: units}).toDate()));
+  }
+  return Promise.all(promises);
 }
 
 fetchPrices = async () => {
@@ -106,9 +128,11 @@ confirmFavorites = ()=>{
     firstVisit: false,
     page: "dashboard",
     prices: null,
-    currentFavorite
+    currentFavorite,
+    historical: null
   });
   this.fetchPrices();
+  this.fetchHistoricalData();
   localStorage.setItem('cryptoInformer',JSON.stringify({
     favorites: this.state.favorites,
     currentFavorite
@@ -164,6 +188,19 @@ settingsContent = ()=>{
           
   </div>
 }
+loadingHistoricalData= ()=>{
+  if(!this.state.historical){
+    return <div>Loading Historical Data..</div>
+  }
+}
+dashboardContent = ()=>{
+  if(this.state.favorites.length === 0){
+    return <div>No favorites chosen..</div>
+  } else {
+    
+  DashBoard.call(this);
+  }
+}
 
 loadingContent = ()=>{
   if(!this.state.coinList){
@@ -180,7 +217,7 @@ loadingContent = ()=>{
         {NavBar.call(this)}
         {this.loadingContent()|| <Content>
         {this.displaySettings() && this.settingsContent()}
-        {this.displayDashBoard() && DashBoard.call(this)}
+        {this.displayDashBoard() && this.dashboardContent()}
         </Content>} 
       </AppLayout>
     );

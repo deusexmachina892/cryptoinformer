@@ -42,7 +42,6 @@ const ChartGrid = styled.div`
     grid-gap: 20px;
     grid-template-columns: 1fr 3fr;
 `;
-
 const numberFormat = (number)=>{
     return + (number+'').slice(0,7);
 }
@@ -51,13 +50,13 @@ export default function(){
     let self = this;
     return [<CoinGrid>
         {
-        this.state.prices.map((price, index)=>{
+        this.state.prices.map(function(price, index){
         let sym = Object.keys(price)[0]
         let data = price[sym].USD;
         let tileProps = {
-            dashBoardFavorite: sym === this.state.currentFavorite,
+            dashBoardFavorite: sym === self.currentFavorite,
             onClick: () =>{
-                self.setState({currentFavorite: sym});
+                self.setState({currentFavorite: sym, historical: null}, self.fetchHistoricalData);
                 localStorage.setItem('cryptoInformer',JSON.stringify({
                    ...JSON.parse(localStorage.getItem('cryptoInformer')),
                     currentFavorite: sym
@@ -86,7 +85,9 @@ export default function(){
         </div>
     </PaddingLight>
     <PaddingLight>
-        <ReactHighCharts config={HighChartsConfig.call(this)}/>
+        {this.state.historical ?
+        <ReactHighCharts config={HighChartsConfig.call(this)}/>:<div>{this.loadingHistoricalData()}</div>
+        }
     </PaddingLight>
     </ChartGrid>]
 }
