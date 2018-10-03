@@ -206,7 +206,7 @@ loadingContent = ()=>{
   if(!this.state.coinList){
     return <div>Loading Coin List..</div>
   }
-  if(!this.state.prices){
+  if(!this.state.firstVisit && !this.state.prices){
     return <div>Loading Prices..</div>
   }
   
