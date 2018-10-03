@@ -31,6 +31,9 @@ export const CoinTile = styled.div`
             ${redBoxShadow}
         }
     `}
+    ${props => props.dashBoardFavorite && css`
+        ${goldBoxShadow}
+    `}
     ${props=> props.chosen && !props.favorite && css`
         pointer-events: none;
         opacity: 0.4;

@@ -25,7 +25,7 @@ const CenterDiv= styled.div`
 
 const MAX_FAVORITES = 15;
 
-const checkFirstVisit = ()=>{
+const getInitialState = ()=>{
   const cryptoInformerData = JSON.parse(localStorage.getItem('cryptoInformer'));
   if(!cryptoInformerData){
     return {
@@ -33,8 +33,10 @@ const checkFirstVisit = ()=>{
       page: 'settings'
     }
   }
+  let {favorites, currentFavorite} = cryptoInformerData;
   return {
-    favorites: cryptoInformerData.favorites
+    favorites,
+    currentFavorite
   }
 }
 
@@ -45,7 +47,7 @@ class App extends Component {
     this.state = {
       page: 'dashboard',
       favorites:[],
-      ...checkFirstVisit()
+      ...getInitialState()
     }
   }
 
@@ -99,14 +101,17 @@ firstVisitMessage = ()=>{if(this.state.firstVisit){
 }}
 
 confirmFavorites = ()=>{
+  let currentFavorite = this.state.favorites[0] 
   this.setState({
     firstVisit: false,
     page: "dashboard",
-    prices: null
+    prices: null,
+    currentFavorite
   });
   this.fetchPrices();
   localStorage.setItem('cryptoInformer',JSON.stringify({
-    favorites: this.state.favorites
+    favorites: this.state.favorites,
+    currentFavorite
   }))
 }
 

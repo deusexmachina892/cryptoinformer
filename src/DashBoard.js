@@ -2,6 +2,11 @@ import React from 'react';
 import {CoinGrid, CoinTile, CoinTileHeader} from './CoinList';
 import styled, {css} from 'styled-components';
 import {fontSizeBig, fontSize3, lightBackground, subtleBoxShadow} from './Style';
+import theme from './HighChartsTheme';  
+import HighChartsConfig from './HighCharts';
+import ReactHighCharts from 'react-highcharts';
+
+ReactHighCharts.Highcharts.setOptions(theme());
 
 const PriceDiv = styled.div`
     justify-self: right;
@@ -52,7 +57,11 @@ export default function(){
         let tileProps = {
             dashBoardFavorite: sym === this.state.currentFavorite,
             onClick: () =>{
-                self.setState({currentFavorite: sym})
+                self.setState({currentFavorite: sym});
+                localStorage.setItem('cryptoInformer',JSON.stringify({
+                   ...JSON.parse(localStorage.getItem('cryptoInformer')),
+                    currentFavorite: sym
+                }))
             }
         }
                return index < 5 ?<CoinTile {...tileProps}> 
@@ -71,15 +80,13 @@ export default function(){
     }
     </CoinGrid>, 
     <ChartGrid><PaddingLight>
-        {this.state.currentFavorite &&
         <div>
             <h2 style= {{textAlign: 'center'}}> {this.state.coinList[this.state.currentFavorite].CoinName}</h2>
          <img src={`https://www.cryptocompare.com/${this.state.coinList[this.state.currentFavorite  ].ImageUrl}`} style={{height: '200px', display: 'block', margin: 'auto'}} />
         </div>
-        }
     </PaddingLight>
     <PaddingLight>
-        Chart Goes Here
+        <ReactHighCharts config={HighChartsConfig.call(this)}/>
     </PaddingLight>
     </ChartGrid>]
 }
