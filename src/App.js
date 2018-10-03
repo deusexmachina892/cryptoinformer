@@ -4,6 +4,7 @@ import styled, {css} from 'styled-components';
 import _ from 'lodash';
 import cc from 'cryptocompare';
 import NavBar from './NavBar';
+import DashBoard from './DashBoard';
 import CoinList from './CoinList';
 import Search from './Search';
 import {ConfirmButton} from './Buttons';
@@ -25,12 +26,15 @@ const CenterDiv= styled.div`
 const MAX_FAVORITES = 15;
 
 const checkFirstVisit = ()=>{
-  const cryptoInformerData = localStorage.getItem('cryptoInformer');
+  const cryptoInformerData = JSON.parse(localStorage.getItem('cryptoInformer'));
   if(!cryptoInformerData){
     return {
       firstVisit: true,
       page: 'settings'
     }
+  }
+  return {
+    favorites: cryptoInformerData.favorites
   }
 }
 
@@ -39,7 +43,7 @@ class App extends Component {
   constructor(props){
     super(props);
     this.state = {
-      page: '',
+      page: 'dashboard',
       favorites:[],
       ...checkFirstVisit()
     }
@@ -47,6 +51,25 @@ class App extends Component {
 
 componentDidMount = () =>{
   this.fetchCoins();
+  this.fetchPrices();
+}
+
+fetchPrices = async () => {
+  let prices;
+  try{
+    prices = await this.prices();
+  }catch(err){
+    this.setState({error: true});
+  }
+  this.setState({prices});
+}
+prices = () =>{
+  let promises = [];
+  this.state.favorites.forEach((sym)=>{
+    promises.push(cc.priceFull(sym, 'USD'));
+  });
+
+  return Promise.all(promises);
 }
 
 fetchCoins = async ()=>{
@@ -78,8 +101,10 @@ firstVisitMessage = ()=>{if(this.state.firstVisit){
 confirmFavorites = ()=>{
   this.setState({
     firstVisit: false,
-    page: "dashboard"
+    page: "dashboard",
+    prices: null
   });
+  this.fetchPrices();
   localStorage.setItem('cryptoInformer',JSON.stringify({
     favorites: this.state.favorites
   }))
@@ -139,6 +164,9 @@ loadingContent = ()=>{
   if(!this.state.coinList){
     return <div>Loading Coin List..</div>
   }
+  if(!this.state.prices){
+    return <div>Loading Prices..</div>
+  }
   
 }
   render() {
@@ -147,6 +175,7 @@ loadingContent = ()=>{
         {NavBar.call(this)}
         {this.loadingContent()|| <Content>
         {this.displaySettings() && this.settingsContent()}
+        {this.displayDashBoard() && DashBoard.call(this)}
         </Content>} 
       </AppLayout>
     );

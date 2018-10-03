@@ -3,9 +3,9 @@ import styled, {css} from 'styled-components';
 import {subtleBoxShadow, lightBackground, goldBoxShadow, redBoxShadow} from './Style';
 import _ from 'lodash';
 
-const CoinGrid = styled.div`
+export const CoinGrid = styled.div`
     display:grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 15px;
     margin: 20px;
     ${props => props.count && css`
@@ -14,7 +14,7 @@ const CoinGrid = styled.div`
 }
 `;
 
-const CoinTile = styled.div`
+export const CoinTile = styled.div`
     ${subtleBoxShadow}
     ${lightBackground}
     padding: 20px;
@@ -36,12 +36,11 @@ const CoinTile = styled.div`
         opacity: 0.4;
     `}
 `;
-const CoinTileHeader = styled.div`
+export const CoinTileHeader = styled.div`
         display:grid;
         grid-template-columns: 1fr 1fr;   
 `;
-const Icon = styled.div`
-    justify-self: right;
+export const Icon = styled.div`
     display:none;
     ${CoinTile}:hover & {
         display: block;
