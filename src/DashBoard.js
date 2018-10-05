@@ -59,16 +59,16 @@ const ChartSelector = styled.select`
 
 
 export default function(){
-    let self = this;
-    return [<CoinGrid>
+
+    return [<CoinGrid key={'coingrid'}>
         {
-        this.state.prices.map(function(price, index){
+        this.state.prices.map((price, index) =>{
         let sym = Object.keys(price)[0]
         let data = price[sym].USD;
         let tileProps = {
-            dashBoardFavorite: sym === self.currentFavorite,
+            dashBoardFavorite: sym === this.currentFavorite,
             onClick: () =>{
-                self.setState({currentFavorite: sym, historical: null}, self.fetchHistoricalData);
+                this.setState({currentFavorite: sym, historical: null}, this.fetchHistoricalData);
                 localStorage.setItem('cryptoInformer',JSON.stringify({
                    ...JSON.parse(localStorage.getItem('cryptoInformer')),
                     currentFavorite: sym
@@ -90,21 +90,21 @@ export default function(){
             })  
     }
     </CoinGrid>, 
-    <ChartGrid><PaddingLight>
+    <ChartGrid key={'chartgrid'}><PaddingLight>
         <div>
             <h2 style= {{textAlign: 'center'}}> {this.state.coinList[this.state.currentFavorite].CoinName}</h2>
          <img src={`https://www.cryptocompare.com/${this.state.coinList[this.state.currentFavorite  ].ImageUrl}`} style={{height: '200px', display: 'block', margin: 'auto'}} />
         </div>
     </PaddingLight>
     <PaddingLight>
-        <ChartSelector onChange={(event)=>{ 
+        <ChartSelector default={'months'} onChange={(event)=>{ 
             this.setState({timeInterval: event.target.value, historical: null}, this.fetchHistoricalData());
             //this.fetchHistoricalData();
             //Have to call this.fetchHistoricalData() in setState. Otherwise, it will fetch previous data
     }}>
             <option value="days">Days</option>
             <option value="weeks">Weeks</option>
-            <option selected value="months">Months</option>
+            <option value="months">Months</option>
         </ChartSelector>
         {this.state.historical ?
         <ReactHighCharts config={HighChartsConfig.call(this)}/>:<div>{this.loadingHistoricalData()}</div>

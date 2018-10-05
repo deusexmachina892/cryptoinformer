@@ -103,7 +103,7 @@ prices = async () =>{
 
 fetchCoins = async ()=>{
   let coinList = (await cc.coinList()).Data;
-  this.setState({coinList, favorites: this.validatedFavorites(coinList)});
+  this.setState({coinList, favorites: this.validateFavorites(coinList)});
 }
 validateFavorites = (coinList) =>{
   let validatedFavorites = [];
